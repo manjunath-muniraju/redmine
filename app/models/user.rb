@@ -235,6 +235,8 @@ class User < Principal
     end
     user.update_last_login_on! if user && !user.new_record? && user.active?
     user
+  rescue => text
+    raise text
   end
 
   # Returns the user who matches the given autologin +key+ or nil
@@ -619,13 +621,14 @@ class User < Principal
     @roles ||=
       Role.joins(members: :project).
         where(["#{Project.table_name}.status <> ?", Project::STATUS_ARCHIVED]).
-          where(Member.arel_table[:user_id].eq(id)).distinct
+          where(Member.arel_table[:user_id].eq(id))
 
     if @roles.blank?
       group_class = anonymous? ? GroupAnonymous : GroupNonMember
       @roles = Role.joins(members: :project).
-        where(["#{Project.table_name}.status <> ? AND #{Project.table_name}.is_public = ?", Project::STATUS_ARCHIVED, true]).
-        where(Member.arel_table[:user_id].eq(group_class.first.id)).distinct
+      where(["#{Project.table_name}.status <> ? AND #{Project.table_name}.is_public = ?", Project::STATUS_ARCHIVED, true]).
+      where(Member.arel_table[:user_id].eq(group_class.first.id))
+      # where(["#{Project.table_name}.status <> ?", Project::STATUS_ARCHIVED]).
     end
 
     @roles
@@ -748,7 +751,7 @@ class User < Principal
       roles.any? do |role|
         (context.is_public? || role.member?) &&
         role.allowed_to?(action) &&
-        (block ? yield(role, self) : true)
+        (block_given? ? yield(role, self) : true)
       end
     elsif context && context.is_a?(Array)
       if context.empty?
@@ -767,7 +770,7 @@ class User < Principal
       roles = self.roles.to_a | [builtin_role]
       roles.any? do |role|
         role.allowed_to?(action) &&
-        (block ? yield(role, self) : true)
+        (block_given? ? yield(role, self) : true)
       end
     else
       false
@@ -865,7 +868,7 @@ class User < Principal
   def self.anonymous
     anonymous_user = AnonymousUser.unscoped.find_by(:lastname => 'Anonymous')
     if anonymous_user.nil?
-      anonymous_user = AnonymousUser.unscoped.create(:lastname => 'Anonymous', :firstname => '', :login => '', :status => 0)
+      anonymous_user = AnonymousUser.unscoped.create(:lastname => 'Anonymous', :firstname => 'User', :login => 'anonymous', :status => 0)
       raise 'Unable to create the anonymous user.' if anonymous_user.new_record?
     end
     anonymous_user

@@ -21,7 +21,8 @@ class Member < ActiveRecord::Base
   belongs_to :user
   belongs_to :principal, :foreign_key => 'user_id'
   has_many :member_roles, :dependent => :destroy
-  has_many :roles, lambda {distinct}, :through => :member_roles
+  # has_many :roles, lambda {distinct}, :through => :member_roles
+  has_many :roles, :through => :member_roles
   belongs_to :project
 
   validates_presence_of :principal, :project
@@ -120,7 +121,8 @@ class Member < ActiveRecord::Base
   def role_inheritance(role)
     member_roles.
       select {|mr| mr.role_id == role.id && mr.inherited_from.present?}.
-      filter_map {|mr| mr.inherited_from_member_role.try(:member)}.
+      map {|mr| mr.inherited_from_member_role.try(:member)}.
+      compact.
       map {|m| m.project == project ? m.principal : m.project}
   end
 

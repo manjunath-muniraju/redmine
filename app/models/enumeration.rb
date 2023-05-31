@@ -158,10 +158,7 @@ class Enumeration < ActiveRecord::Base
     super
     if saved_change_to_position? && self.parent_id.nil?
       self.class.where.not(:parent_id => nil).update_all(
-        "position = coalesce((
-          select position
-          from (select id, position from enumerations) as parent
-          where parent_id = parent.id), 1)"
+        "position = coalesce((select position from (select id, position from enumerations where parent_id=id)),1)"
       )
     end
   end
