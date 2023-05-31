@@ -3,6 +3,7 @@ class PopulateEnumerationsPositionName < ActiveRecord::Migration[4.2]
     IssuePriority.compute_position_names
   end
 
+  
   def down
     IssuePriority.clear_position_names
   end

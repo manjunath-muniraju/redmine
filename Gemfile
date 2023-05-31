@@ -117,3 +117,6 @@ end
 Dir.glob File.expand_path("../plugins/*/{Gemfile,PluginGemfile}", __FILE__) do |file|
   eval_gemfile file
 end
+
+gem "activerecord-oracle_enhanced-adapter", "~> 6.1.0"
+gem "ruby-oci8", "~> 2.2"
