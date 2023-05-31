@@ -120,3 +120,6 @@ end
 
 gem "activerecord-oracle_enhanced-adapter", "~> 6.1.0"
 gem "ruby-oci8", "~> 2.2"
+
+gem 'rack-cors', '~> 1.1', '>= 1.1.1'
+gem "webrick", "~> 1.7"
