@@ -17,8 +17,8 @@ class CreateJournals < ActiveRecord::Migration[4.2]
       t.column "journal_id", :integer, :default => 0, :null => false
       t.column "property", :string, :limit => 30, :default => "", :null => false
       t.column "prop_key", :string, :limit => 30, :default => "", :null => false
-      t.column "old_value", :string
-      t.column "value", :string
+      t.column "old_value", :text
+      t.column "value", :text
     end
 
     # indexes

@@ -20,6 +20,7 @@ class PopulateIssuesClosedOn < ActiveRecord::Migration[4.2]
     end
   end
 
+  
   def down
     Issue.update_all :closed_on => nil
   end

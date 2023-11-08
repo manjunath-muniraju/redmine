@@ -6,6 +6,7 @@ class InsertAllowedStatusesForNewIssues < ActiveRecord::Migration[4.2]
       " FROM #{Tracker.table_name} t, #{Role.table_name} r"
     WorkflowTransition.connection.execute(sql)
 
+    
     # Adds other statuses that are reachable with one transition
     # to preserve previous behaviour as default
     sql = "INSERT INTO #{WorkflowTransition.table_name} (tracker_id, old_status_id, new_status_id, role_id, type)" +
