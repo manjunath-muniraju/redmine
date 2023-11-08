@@ -67,8 +67,6 @@ if File.exist?(database_file)
   if adapters.any?
     adapters.each do |adapter|
       case adapter
-      when 'mysql2'
-        gem "mysql2", "~> 0.5.0", :platforms => [:mri, :mingw, :x64_mingw]
       when /postgresql/
         gem "pg", "~> 1.4.2", :platforms => [:mri, :mingw, :x64_mingw]
       when /sqlite3/
@@ -76,6 +74,9 @@ if File.exist?(database_file)
       when /sqlserver/
         gem "tiny_tds", "~> 2.1.2", :platforms => [:mri, :mingw, :x64_mingw]
         gem "activerecord-sqlserver-adapter", "~> 6.1.0", :platforms => [:mri, :mingw, :x64_mingw]
+      when /oracle_enhanced/
+        gem "activerecord-oracle_enhanced-adapter", "~> 6.1.0", :platforms => [:mri, :mingw, :x64_mingw]
+        gem "ruby-oci8", "~> 2.2", :platforms => [:mri, :mingw, :x64_mingw]  # only for CRuby users
       else
         warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
@@ -117,3 +118,5 @@ end
 Dir.glob File.expand_path("../plugins/*/{Gemfile,PluginGemfile}", __FILE__) do |file|
   eval_gemfile file
 end
+
+gem "webrick", "~> 1.7"
