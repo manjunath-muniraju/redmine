@@ -20,12 +20,12 @@
 class Tracker < ActiveRecord::Base
   include Redmine::SafeAttributes
 
-  CORE_FIELDS_UNDISABLABLE = %w(project_id tracker_id subject is_private).freeze
+  CORE_FIELDS_UNDISABLABLE = %w(project_id tracker_id subject priority_id is_private).freeze
   # Fields that can be disabled
   # Other (future) fields should be appended, not inserted!
   CORE_FIELDS =
     %w(assigned_to_id category_id fixed_version_id parent_issue_id
-       start_date due_date estimated_hours done_ratio description priority_id).freeze
+       start_date due_date estimated_hours done_ratio description).freeze
   CORE_FIELDS_ALL = (CORE_FIELDS_UNDISABLABLE + CORE_FIELDS).freeze
 
   before_destroy :check_integrity
@@ -108,7 +108,6 @@ class Tracker < ActiveRecord::Base
     else
       @issue_status_ids ||=
         WorkflowTransition.where(:tracker_id => id).
-          where('old_status_id <> new_status_id').
           distinct.pluck(:old_status_id, :new_status_id).flatten.uniq
     end
   end

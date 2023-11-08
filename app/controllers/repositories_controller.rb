@@ -202,16 +202,18 @@ class RepositoriesController < ApplicationController
     (show_error_not_found; return) unless @entry
 
     @annotate = @repository.scm.annotate(@path, @rev)
-    if @annotate.blank?
+    if @annotate.nil? || @annotate.empty?
       @annotate = nil
       @error_message = l(:error_scm_annotate)
-    elsif @annotate.lines.sum(&:size) > Setting.file_max_size_displayed.to_i.kilobyte
-      @annotate = nil
-      @error_message = l(:error_scm_annotate_big_text_file)
     else
-      # the SCM adapter supports "View annotation prior to this change" links
-      # and the entry has previous annotations
-      @has_previous = @annotate.previous_annotations.any?
+      ann_buf_size = 0
+      @annotate.lines.each do |buf|
+        ann_buf_size += buf.size
+      end
+      if ann_buf_size > Setting.file_max_size_displayed.to_i.kilobyte
+        @annotate = nil
+        @error_message = l(:error_scm_annotate_big_text_file)
+      end
     end
     @changeset = @repository.find_changeset_by_name(@rev)
   end

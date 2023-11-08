@@ -60,8 +60,6 @@ class Role < ActiveRecord::Base
     where("#{compare} builtin = 0")
   end)
 
-  belongs_to :default_time_entry_activity, :class_name => 'TimeEntryActivity'
-
   before_destroy :check_deletable
   has_many :workflow_rules, :dependent => :delete_all
   has_and_belongs_to_many :custom_fields, :join_table => "#{table_name_prefix}custom_fields_roles#{table_name_suffix}", :foreign_key => "role_id"
@@ -106,8 +104,7 @@ class Role < ActiveRecord::Base
     'managed_role_ids',
     'permissions',
     'permissions_all_trackers',
-    'permissions_tracker_ids',
-    'default_time_entry_activity_id'
+    'permissions_tracker_ids'
   )
 
   # Copies attributes from another role, arg can be an id or a Role
@@ -122,7 +119,7 @@ class Role < ActiveRecord::Base
   end
 
   def permissions=(perms)
-    perms = perms.filter_map {|p| p.to_sym unless p.blank?}.uniq if perms
+    perms = perms.collect {|p| p.to_sym unless p.blank?}.compact.uniq if perms
     write_attribute(:permissions, perms)
   end
 
