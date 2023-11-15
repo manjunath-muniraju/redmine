@@ -8,6 +8,9 @@ curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH="/opt/oracle/instantclient_21_10:$LD_LIBRARY_PATH"' >> ~/.bashrc
 echo 'export OCI_PATH="/opt/oracle/instantclient_21_10:$OCI_PATH"' >> ~/.bashrc
+cd /opt/oracle/instantclient_21_10
+ln -s libclntsh.so.21.1 libclntsh.so
+cd $HOME
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 source ~/.bashrc
 rbenv install 3.1.3

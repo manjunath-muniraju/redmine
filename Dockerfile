@@ -1,5 +1,5 @@
 FROM harbor-prod.hinagro.com/base-docker-images/ubuntu:20.04
-LABEL maintainer="Srinivas G <srinivas.g@perfios.com>"
+LABEL developer="Manjunath Muniraju <manjunath.m@perfios.com>"
 SHELL ["bash", "-c"]
 RUN groupadd -r -g 999 redmine && useradd -r -g redmine -u 999 redmine
 COPY . /perfios/redmine/
