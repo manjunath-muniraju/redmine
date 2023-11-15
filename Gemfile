@@ -77,7 +77,9 @@ if File.exist?(database_file)
         gem "activerecord-sqlserver-adapter", "~> 6.1.0", :platforms => [:mri, :mingw, :x64_mingw]
       when /oracle_enhanced/
         gem "activerecord-oracle_enhanced-adapter", "~> 6.1.0", :platforms => [:mri, :mingw, :x64_mingw]
-        gem "ruby-oci8", "~> 2.2", :platforms => [:mri, :mingw, :x64_mingw]  # only for CRuby users
+        # gem "ruby-oci8", "~> 2.2", :platforms => [:mri, :mingw, :x64_mingw]  # only for CRuby users
+        gem "ruby-oci8", "~> 2.2"
+
       else
         warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
