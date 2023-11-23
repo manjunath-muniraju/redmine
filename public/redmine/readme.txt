@@ -1,0 +1,2 @@
+New directory with name redmine was create under public folder and copied (duplicated) entire contents of /public into /public/redmine.
+This was done to solve the context path issue (when we added relative_url_root inside environment.rb file)
