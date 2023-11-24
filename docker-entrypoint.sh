@@ -18,6 +18,7 @@ rbenv global 3.1.3
 gem install bundler
 gem install rails -v 6.1.7
 bundle config set --local without 'development test';
+source ~/.bashrc
 bundle install;
 bundle exec rake generate_secret_token;
 mkdir -p tmp tmp/pdf public/plugin_assets
