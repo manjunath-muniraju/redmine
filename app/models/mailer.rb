@@ -88,12 +88,6 @@ class Mailer < ActionMailer::Base
 
     mail :to => user,
       :subject => subject
-
-    # mail(to: @issue.custom_field_value(5),
-    #   body: "breh",
-    #   content_type: "text/html",
-    #   subject: "breh"
-    # )
   end
 
   def customer_mailer_add(user, issue)
@@ -108,22 +102,33 @@ class Mailer < ActionMailer::Base
     @issue = issue
     @user = user
     @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
-    # subject = "[#{issue.project.name} - #{issue.tracker.name} ##{issue.id}]"
-    # subject += " (#{issue.status.name})" if Setting.show_status_changes_in_mail_subject?
-    # subject += " #{issue.subject}"
     s = "Ticket ##{issue.id} Created"
 
-    # Mail.new.deliver do
-    #   to 'luigibreh69@gmail.com'
-    #   from 'gitlabmailer'
-    #   subject 'in built code mailer'
-    #   body 'yessir!'
-    # end
     mail(to: @issue.custom_field_value(5),
       body: "Ticket created",
       content_type: "text/html",
       subject: s
     )
+  end
+
+  # For sending a mail in "Error" tracker
+  def issue_add_error(user, issue)
+    redmine_headers 'Project' => issue.project.identifier,
+                    'Issue-Tracker' => issue.tracker.name,
+                    'Issue-Id' => issue.id,
+                    'Issue-Author' => issue.author.login,
+                    'Issue-Assignee' => assignee_for_header(issue)
+    message_id issue
+    references issue
+    @author = issue.author
+    @issue = issue
+    @user = user
+    @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
+    subject = "Ticket ##{issue.id} - Manual Reassignment Required for Branch "
+    subject += issue.custom_field_value(3).to_s
+
+    mail :to => user,
+      :subject => subject
   end
 
   # Notifies users about a new issue.
@@ -133,11 +138,18 @@ class Mailer < ActionMailer::Base
   def self.deliver_issue_add(issue)
     user = User.find(1)
     # issue_add(user, issue).deliver_now
-    customer_mailer_add(user, issue).deliver_later
     users = issue.notified_users | issue.notified_watchers | issue.notified_mentions
-    users.each do |user|
-      issue_add(user, issue).deliver_later
+    if issue.tracker.name.strip.downcase == "error"
+      Rails.logger.info "Group assignment failed. Notifying admin team via mail."
+      users.each do |user|
+        issue_add_error(user, issue).deliver_later
+      end
+    else
+      users.each do |user|
+        issue_add(user, issue).deliver_later
+      end
     end
+    customer_mailer_add(user, issue).deliver_later
   end
 
   # Builds a mail for notifying user about an issue update
@@ -174,9 +186,6 @@ class Mailer < ActionMailer::Base
     message_id journal
     references issue
     @author = journal.user
-    # s = "[#{issue.project.name} - #{issue.tracker.name} ##{issue.id}] "
-    # s += "(#{issue.status.name}) " if journal.new_value_for('status_id') && Setting.show_status_changes_in_mail_subject?
-    # s += issue.subject
     s = "Ticket ##{issue.id} Updated"
     @subject = s
     @issue = issue
