@@ -125,7 +125,7 @@ class Mailer < ActionMailer::Base
     @user = user
     @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
     subject = "Ticket ##{issue.id} - Manual Reassignment Required for Branch "
-    subject += issue.custom_field_value(3)
+    subject += issue.custom_field_value(3).to_s
 
     mail :to => user,
       :subject => subject
@@ -139,7 +139,7 @@ class Mailer < ActionMailer::Base
     user = User.find(1)
     # issue_add(user, issue).deliver_now
     users = issue.notified_users | issue.notified_watchers | issue.notified_mentions
-    if issue.tracker.name.strip.casecmp("error") == 0
+    if issue.tracker.name.strip.downcase == "error"
       Rails.logger.info "Group assignment failed. Notifying admin team via mail."
       users.each do |user|
         issue_add_error(user, issue).deliver_later
