@@ -125,7 +125,7 @@ class Mailer < ActionMailer::Base
     @user = user
     @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
     subject = "Ticket ##{issue.id} - Manual Reassignment Required for Branch "
-    subject += issue.custom_field_value(3).to_s
+    subject += issue.custom_field_value(4).to_s
 
     mail :to => user,
       :subject => subject
